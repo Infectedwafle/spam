@@ -1,0 +1,52 @@
+<div class="navbar">
+	<div class="brand">
+		SPAM
+	</div>
+</div>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-3">
+			<div>
+				Page/Frame Size
+			</div>
+			<div>
+				{{input class='config-input' value=pageFrameSize}}
+			</div>
+		</div>
+		<div class="col-3">
+			<div>
+				Memory Size
+			</div>
+			<div>
+				{{input class='config-input' value=memorySize}}
+			</div>
+		</div>		
+	</div>
+	<div class="row">
+		<div class="col-6">
+			<div>
+				Actions
+			</div>
+			<div class="row">
+				<div class="col-sm">
+					<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
+				</div>
+				<div class="col-sm">
+					<button class="action-buttons" {{action 'generateInstructions' pageFrameSize}}>Generate Instructions</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-6">
+			{{textarea class='instructions-textarea' value=instructions rows=25}}
+		</div>
+		<div class="col-6">
+			{{memory-simulator
+				system=model
+			}}
+		</div>
+	</div>
+</div>

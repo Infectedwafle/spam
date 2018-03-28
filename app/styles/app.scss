@@ -1,0 +1,33 @@
+@import "ember-cli-bootstrap-4/bootstrap-grid";
+
+body {
+	margin: 0px;
+	background-color: lighten(black, 20%);
+	color: darken(white, 15%);
+}
+
+.navbar {
+	height: 60px;
+	background-color: lighten(black, 35%);
+	display: flex;
+	align-items: center;
+	.brand {
+		font-size: 25px;
+		padding-left: 20px;
+	}
+}
+
+.config-input {
+	width: 100%;
+	padding: 5px;
+}
+
+.action-buttons {
+	width: 100%;
+	padding: 5px;
+}
+
+.instructions-textarea {
+	width: 100%;
+	resize: none;
+}
