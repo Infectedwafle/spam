@@ -1,24 +1,14 @@
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-4">
-			<div class="pages">
-				Pages {{system.pages.length}}
-			</div>
-			{{#each system.pages as |page|}}
-				<div>
-					{{page.processId}} - {{page.pageSize}}
-				</div>
-			{{/each}}
+		<div class="col-6">
+			{{memory-simulator-os
+				os=system.operatingSystem
+			}}
 		</div>
-		<div class="col-4">
-			<div class="frames">
-				Frames {{system.frames.length}}
-			</div>
-			{{#each system.frames as |frame|}}
-				<div>
-					{{frame.processId}} - {{frame.pageSize}}
-				</div>
-			{{/each}}
+		<div class="col-6">
+			{{memory-simulator-mmu
+				mmu=system.memoryManagementUnit
+			}}
 		</div>
 	</div>
 </div>

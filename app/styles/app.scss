@@ -1,5 +1,3 @@
-@import "ember-cli-bootstrap-4/bootstrap-grid";
-
 body {
 	margin: 0px;
 	background-color: lighten(black, 20%);
@@ -31,3 +29,6 @@ body {
 	width: 100%;
 	resize: none;
 }
+
+@import "ember-cli-bootstrap-4/bootstrap-grid";
+@import "ember-power-select";

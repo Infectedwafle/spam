@@ -5,7 +5,15 @@
 </div>
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-3">
+		<div class="col-2">
+			<div>
+				Number Of Processes
+			</div>
+			<div>
+				{{input class='config-input' value=numberOfProcesses}}
+			</div>
+		</div>
+		<div class="col-2">
 			<div>
 				Page/Frame Size
 			</div>
@@ -13,26 +21,31 @@
 				{{input class='config-input' value=pageFrameSize}}
 			</div>
 		</div>
-		<div class="col-3">
+		<div class="col-2">
 			<div>
 				Memory Size
 			</div>
 			<div>
 				{{input class='config-input' value=memorySize}}
 			</div>
-		</div>		
+		</div>
+		<div class="col-2">
+			<div>
+				System Size
+			</div>
+			<div>
+				{{input class='config-input' value=instructionSize}}
+			</div>
+		</div>
 	</div>
 	<div class="row">
-		<div class="col-6">
+		<div class="col-2">
 			<div>
 				Actions
 			</div>
 			<div class="row">
 				<div class="col-sm">
-					<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
-				</div>
-				<div class="col-sm">
-					<button class="action-buttons" {{action 'generateInstructions' pageFrameSize}}>Generate Instructions</button>
+					<button class="action-buttons" {{action 'generateInstructions' pageFrameSize numberOfProcesses}}>Generate Instructions</button>
 				</div>
 			</div>
 		</div>
@@ -40,13 +53,19 @@
 </div>
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-6">
+		<div class="col-2">
 			{{textarea class='instructions-textarea' value=instructions rows=25}}
 		</div>
-		<div class="col-6">
+		<div class="col-10">
 			{{memory-simulator
-				system=model
+				system=system
 			}}
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-2">
+			<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
+		</div>
+	</div>
 </div>
+{{outlet}}
