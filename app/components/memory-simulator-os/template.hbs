@@ -1,0 +1,28 @@
+<div class="container">
+	<div class="row">
+		<div class="col-sm">
+			<div class="row">
+				Process Control Board
+			</div>
+			<div class="row process-list">
+				{{#each os.processControlList as |process|}}
+					<div class="process">
+						{{process.id}}
+					</div>
+				{{/each}}
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="row">
+				Current Page Table
+			</div>
+			<div class="row page-list">
+				{{#each os.currentPageTable as |page|}}
+					<div class="page">
+						{{page.frameNumber}}
+					</div>
+				{{/each}}
+			</div>	
+		</div>
+	</div>
+</div>

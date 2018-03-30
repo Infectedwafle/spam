@@ -1,0 +1,30 @@
+<div class="container">
+	<div class="row">
+		<div class="col-sm">
+			Memory
+		</div>
+		<div class="col-sm">
+			Swap Space
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm">
+			<div class="row memory-group">
+				{{#each mmu.frameList as |frame|}}
+					<div class="col-3 frame">
+						{{frame.processId}}
+					</div>
+				{{/each}}
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="row memory-group">
+				{{#each mmu.swapList as |swapFrame|}}
+					<div class="col-3 frame">
+						{{frame.processId}}
+					</div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+</div>

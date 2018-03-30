@@ -5,6 +5,21 @@ import MemoryFrame from 'spam/models/memory-frame/object';
 export default EmberObject.extend({
 	memory: null,
 	frameSize: null,
-	memoryManagementUnit: null,
-	operatingSystem: null
+	memoryUnit: null,
+	operatingSystem: null,
+	loadInstruction(instruction) {
+		let operatingSystem = this.get('operatingSystem');
+		operatingSystem.runInstruction();
+	},
+	reserveMemory(amount) {
+		let memoryUnit = this.get('memoryUnit');
+		let frameSize = this.get('frameSize');
+
+	},
+	releaseMemory(amount) {
+
+	},
+	requestFrame(id) {
+
+	}
 });

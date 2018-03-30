@@ -50,7 +50,7 @@ const generateProcess = function(processId, pageFrameSize) {
 	return {
 		id: processId,
 		codeSize: getRandomInt(1, pageFrameSize * 2),
-		dataSize: getRandomInt(1, pageFrameSize * 2),
+		dataSize: getRandomInt(1, pageFrameSize * 4),
 	}
 }
 

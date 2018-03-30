@@ -2,5 +2,7 @@ import EmberObject from '@ember/object';
 
 
 export default EmberObject.extend({
-	processId: null
+	processId: null,
+	size: null,
+	used: null
 });

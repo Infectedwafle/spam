@@ -54,7 +54,15 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-2">
-			{{textarea class='instructions-textarea' value=instructions rows=25}}
+			<div class="row">
+				<div class="col-12">
+					{{textarea class='instructions-textarea' value=instructions rows=25}}
+				</div>
+				<div class="col-12">
+					<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
+					<button class="action-buttons" {{action 'loadInstruction' instructionCounter}}>Run</button>
+				</div>
+			</div>
 		</div>
 		<div class="col-10">
 			{{memory-simulator
@@ -62,10 +70,4 @@
 			}}
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-2">
-			<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
-		</div>
-	</div>
 </div>
-{{outlet}}
