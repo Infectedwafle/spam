@@ -1,10 +1,12 @@
 import Controller from '@ember/controller';
-import EmberObject, { computed } from '@ember/object';
+import { computed } from '@ember/object';
 import System from 'spam/models/system/object';
 import OperatingSystem from 'spam/models/operating-system/object';
 import MemoryUnit from 'spam/models/memory-unit/object';
 import Instruction from 'spam/models/instruction/object';
 import InstructionGenerator from 'spam/utils/instruction-generator';
+import MemoryFrame from 'spam/models/memory-frame/object';
+import Process from 'spam/models/process/object';
 
 export default Controller.extend({
 	_system: null,
@@ -74,14 +76,28 @@ export default Controller.extend({
 			let operatingSystem = OperatingSystem.create({
 				pageSize: system.get('frameSize'),
 				processControlList: new Array(frameCount),
-				currentPageTable: new Array(frameCount)
+				currentPageTable: new Array(frameCount),
+				system: system // reference to ask system to run commands
 			});
+
+			for(let i = 0; i < operatingSystem.get('processControlList').length; i++) {
+				operatingSystem.get('processControlList')[i] = Process.create({id: null});
+			}
 
 			let memoryUnit = MemoryUnit.create({
 				frameSize: system.get('frameSize'),
 				frameList: new Array(frameCount),
-				swapList: new Array(frameCount * 2)
+				swapList: new Array(frameCount * 2),
+				system: system // reference to ask system to run commands
 			});
+
+			for(let i = 0; i < memoryUnit.get('frameList').length; i++) {
+				memoryUnit.get('frameList')[i] = MemoryFrame.create({processId: null});
+			}
+
+			for(let i = 0; i < memoryUnit.get('swapList').length; i++) {
+				memoryUnit.get('swapList')[i] = MemoryFrame.create({processId: null});
+			}
 
 			system.set('operatingSystem', operatingSystem);
 			system.set('memoryUnit', memoryUnit);
@@ -92,14 +108,14 @@ export default Controller.extend({
 
 					if(instructionParts.length === 2) {
 						return Instruction.create({
-							processId: instructionParts[0],
-							codeSize: instructionParts[1]
+							processId: Number(instructionParts[0]),
+							codeSize: Number(instructionParts[1])
 						});
 					} else if(instructionParts.length === 3) {
 						return Instruction.create({
-							processId: instructionParts[0],
-							codeSize: instructionParts[1],
-							dataSize: instructionParts[2]
+							processId: Number(instructionParts[0]),
+							codeSize: Number(instructionParts[1]),
+							dataSize: Number(instructionParts[2])
 						});
 					}
 				});
