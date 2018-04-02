@@ -11,8 +11,8 @@
 		<div class="col-sm">
 			<div class="row memory-group">
 				{{#each mmu.frameList as |frame|}}
-					<div class="col-3 frame">
-						{{frame.processId}}
+					<div class="col-6 frame">
+						Process: {{frame.processId}} - Size: {{frame.size}}
 					</div>
 				{{/each}}
 			</div>
@@ -20,7 +20,7 @@
 		<div class="col-sm">
 			<div class="row memory-group">
 				{{#each mmu.swapList as |swapFrame|}}
-					<div class="col-3 frame">
+					<div class="col-6 frame">
 						{{frame.processId}}
 					</div>
 				{{/each}}

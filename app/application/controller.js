@@ -69,17 +69,18 @@ export default Controller.extend({
 			let frameCount = Number(this.get('memorySize')) / Number(this.get('pageFrameSize'));
 
 			let system = System.create({
-				frameSize: this.get('pageFrameSize'),
-				memorySize: this.get('memorySize'),
+				frameSize: Number(this.get('pageFrameSize')),
+				memorySize: Number(this.get('memorySize')),
 			});
 
 			let operatingSystem = OperatingSystem.create({
 				pageSize: system.get('frameSize'),
 				processControlList: new Array(frameCount),
-				currentPageTable: new Array(frameCount),
+				currentPageTable: null,
 				system: system // reference to ask system to run commands
 			});
 
+			// Init PCB
 			for(let i = 0; i < operatingSystem.get('processControlList').length; i++) {
 				operatingSystem.get('processControlList')[i] = Process.create({id: null});
 			}
@@ -91,12 +92,14 @@ export default Controller.extend({
 				system: system // reference to ask system to run commands
 			});
 
+			// Init Frames
 			for(let i = 0; i < memoryUnit.get('frameList').length; i++) {
-				memoryUnit.get('frameList')[i] = MemoryFrame.create({processId: null});
+				memoryUnit.get('frameList')[i] = MemoryFrame.create({id: i, processId: null});
 			}
 
+			// Init Swap Frames
 			for(let i = 0; i < memoryUnit.get('swapList').length; i++) {
-				memoryUnit.get('swapList')[i] = MemoryFrame.create({processId: null});
+				memoryUnit.get('swapList')[i] = MemoryFrame.create({id: i, processId: null});
 			}
 
 			system.set('operatingSystem', operatingSystem);

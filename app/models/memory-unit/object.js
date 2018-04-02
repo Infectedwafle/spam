@@ -5,7 +5,7 @@ export default EmberObject.extend({
 	framesList: null,
 	reserveMemory(amount) {
 		let frameList = this.get('frameList');
-		let numberOfFrames = Math.ceil(amount / this.get('frameSize'));
+		let neededFrames = Math.ceil(amount / this.get('frameSize'));
 
 		let requestedFrames = [];
 
@@ -14,8 +14,12 @@ export default EmberObject.extend({
 				requestedFrames.push(frame);
 			}
 
-			return requestedFrames.length === numberOfFrames;
+			return requestedFrames.length === neededFrames;
 		});
+
+		if(requestedFrames.length !== neededFrames) {
+			requestedFrames = null; // simulates error / page fault
+		}
 
 		return requestedFrames;
 	},
@@ -24,13 +28,12 @@ export default EmberObject.extend({
 		let frameList = this.get('frameList');
 
 		frameList.forEach((frame) => {
-			console.log(frame.get('processId'), processId);
 			if(frame.get('processId') === processId) {
 				frame.set('processId', null);
 			}
 		});
 	},
-	requestFrame(id) {
+	requestFrame() {
 
 	}
 });
