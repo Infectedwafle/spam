@@ -128,8 +128,8 @@ export default Controller.extend({
 
 			this.set('_system', system);
 		},
-		generateInstructions(pageFrameSize, numberOfProcesses) {
-			let instructions = InstructionGenerator.generate(pageFrameSize, numberOfProcesses);
+		generateInstructions(pageFrameSize, memorySize, numberOfProcesses) {
+			let instructions = InstructionGenerator.generate(pageFrameSize, memorySize, numberOfProcesses);
 			this.set('instructions', instructions);
 		},
 		loadInstruction(counter) {

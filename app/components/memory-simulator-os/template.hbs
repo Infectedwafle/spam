@@ -1,29 +1,53 @@
 <div class="container">
 	<div class="row">
 		<div class="col-sm">
-			<div class="row">
-				Process Control Board
-				<div>
-					{{os.error}}
-				</div>
-			</div>
+			Process Control Board
+		</div>
+		<div class="col-sm">
+			Master Page Table
+		</div>
+		<div class="col-sm">
+			Secondary Page Table
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg">
+			{{os.error}}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm">
 			<div class="row process-list">
 				{{#each os.processControlList as |process|}}
 					<div class="process">
-						Process: {{process.id}} - Frame: {{process.frameNumber}}
+						{{#if (eq process.id null)}}
+							{{!-- Show Nothing --}}
+						{{else}}
+							Process: {{process.id}} - Frame: {{process.frameId}}
+						{{/if}}
 					</div>
 				{{/each}}
 			</div>
 		</div>
 		<div class="col-sm">
-			<div class="row">
-				Current Page Table
-			</div>
 			<div class="row page-list">
-				{{#each os.currentPageTable.pages as |page|}}
+				{{#each os.masterPageTable.pages as |page|}}
 					<div class="page">
 						{{#if (eq page.frameId null)}}
-							Empty
+							{{!-- Show Nothing --}}
+						{{else}}
+							Page: {{page.id}} - Frame: {{page.frameId}}
+						{{/if}}
+					</div>
+				{{/each}}
+			</div>	
+		</div>
+		<div class="col-sm">
+			<div class="row page-list">
+				{{#each os.secondaryPageTable.pages as |page|}}
+					<div class="page">
+						{{#if (eq page.frameId null)}}
+							{{!-- Show Nothing --}}
 						{{else}}
 							Page: {{page.id}} - Frame: {{page.frameId}}
 						{{/if}}
