@@ -153,7 +153,8 @@ export default Controller.extend({
 						case 5: // use data
 							return Instruction.create({
 								type: Number(instructionParts[0]),
-								processId: Number(instructionParts[1])
+								processId: Number(instructionParts[1]),
+								dataSize: Number(instructionParts[2])
 							});
 							break
 						default:

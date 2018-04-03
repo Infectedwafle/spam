@@ -1,4 +1,4 @@
-import EmberObject from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import Process from 'spam/models/process/object';
 import PageTable from 'spam/models/page-table/object';
 import MemoryPage from 'spam/models/memory-page/object';
@@ -8,7 +8,7 @@ export default EmberObject.extend({
 	processControlList: null,
 	_tempMasterPageTable: null,
 	_masterPageTable: null,
-	masterPageTable: Ember.computed('_tempMasterPageTable', '_masterPageTable', {
+	masterPageTable: computed('_tempMasterPageTable', '_masterPageTable', {
 		get() {
 			return this.get('_tempMasterPageTable') || this.get('_masterPageTable');
 		},
@@ -19,7 +19,7 @@ export default EmberObject.extend({
 	}),
 	_tempSecondaryPageTable: null,
 	_secondaryPageTable: null,
-	secondaryPageTable:  Ember.computed('_tempSecondaryPageTable', '_secondaryPageTable', {
+	secondaryPageTable:  computed('_tempSecondaryPageTable', '_secondaryPageTable', {
 		get() {
 			return this.get('_tempSecondaryPageTable') || this.get('_secondaryPageTable');
 		},
@@ -35,27 +35,26 @@ export default EmberObject.extend({
 		os.set('_tempSecondaryPageTable', null);
 
 		let system = os.get('system');
-		let processControlList = os.get('processControlList');
+		// let processControlList = os.get('processControlList');
 
 		switch(instruction.get('type')) {
 			case 0:
 				createProcess(os, instruction.processId, instruction.codeSize, instruction.dataSize);
 				break;
 			case 1:
-				system.releaseMemory(process.id);
-				process.set('id', null);
+				system.releaseMemory(instruction.get('processId'));
 				break;
 			case 2:
-				
+				useCode(os, instruction.processId, instruction.codeSize);
 				break;
 			case 3:
-
+				useData(os, instruction.processId, instruction.dataSize);
 				break;
 			case 4:
-
+				useStack(os, instruction.processId, instruction.stackSize);
 				break;
 			case 5:
-
+				useHeap(os, instruction.processId, instruction.heapSize);
 				break;
 			default:
 				throw "Command not recognized";

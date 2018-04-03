@@ -52,6 +52,11 @@ const createProcessCommandInstruction = function(processId, memorySize, pageFram
 	let commandId = getRandomInt(2, 5);
 	let randomDataSize = getRandomInt(1, pageFrameSize * Math.min(10, memorySize / pageFrameSize));
 	let instruction = `${commandId} ${processId} ${randomDataSize}`;
+	
+	if(commandId === 2) {
+		instruction = `${commandId} ${processId}`;
+	}
+	
 	return instruction;
 }
 
