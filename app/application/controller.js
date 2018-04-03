@@ -33,7 +33,7 @@ export default Controller.extend({
 			return this.get('_memorySize');
 		}
 	}),
-	_numberOfProcesses: 5,
+	_numberOfProcesses: 1,
 	numberOfProcesses: computed('_numberOfProcesses', {
 		get() {
 			return this.get('_numberOfProcesses');
@@ -118,17 +118,47 @@ export default Controller.extend({
 				let instructionList = this.get('instructions').split("\n").map((instruction) => {
 					let instructionParts = instruction.split(" ");
 
-					if(instructionParts.length === 2) {
-						return Instruction.create({
-							processId: Number(instructionParts[0]),
-							codeSize: Number(instructionParts[1])
-						});
-					} else if(instructionParts.length === 3) {
-						return Instruction.create({
-							processId: Number(instructionParts[0]),
-							codeSize: Number(instructionParts[1]),
-							dataSize: Number(instructionParts[2])
-						});
+					switch(Number(instructionParts[0])) {
+						case 0: // Create Process
+							return Instruction.create({
+								type: Number(instructionParts[0]),
+								processId: Number(instructionParts[1]),
+								codeSize: Number(instructionParts[2]),
+								dataSize: Number(instructionParts[3])
+							});
+						case 1: // Terminate Process
+							return Instruction.create({
+								type: Number(instructionParts[0]),
+								processId: Number(instructionParts[1])
+							});
+						case 2: // use stack if no stack create one
+							return Instruction.create({
+								type: Number(instructionParts[0]),
+								processId: Number(instructionParts[1]),
+								stackSize: Number(instructionParts[2])
+							});
+						case 3: // use heap if no heap create one
+							return Instruction.create({
+								type: Number(instructionParts[0]),
+								processId: Number(instructionParts[1]),
+								heapSize: Number(instructionParts[2])
+							});
+							break;
+						case 4: // use code
+							return Instruction.create({
+								type: Number(instructionParts[0]),
+								processId: Number(instructionParts[1])
+							});
+							break;
+						case 5: // use data
+							return Instruction.create({
+								type: Number(instructionParts[0]),
+								processId: Number(instructionParts[1])
+							});
+							break
+						default:
+							throw "Command not recognized";
+							break;
 					}
 				});
 
@@ -138,7 +168,7 @@ export default Controller.extend({
 			this.set('_system', system);
 		},
 		generateInstructions(pageFrameSize, memorySize, numberOfProcesses) {
-			let instructions = InstructionGenerator.generate(pageFrameSize, memorySize, numberOfProcesses);
+			let instructions = InstructionGenerator.generate(Number(pageFrameSize), Number(memorySize), Number(numberOfProcesses));
 			this.set('instructions', instructions);
 		},
 		loadInstruction(counter) {

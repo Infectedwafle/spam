@@ -31,23 +31,36 @@ export default EmberObject.extend({
 	error:null,
 	runInstruction(instruction) {
 		let os = this;
-		let system = os.get('system');
-		let processControlList = os.get('processControlList');
 		os.set('_tempMasterPageTable', null);
 		os.set('_tempSecondaryPageTable', null);
 
-		let process = processControlList.find((existingProcess) => {
-			if(existingProcess && existingProcess.id === instruction.processId) {
-				return existingProcess;
-			}
-		});
-		
-		// If the process does not exist create it
-		if(!process) {
-			createProcess(os, instruction.processId, instruction.codeSize, instruction.dataSize);
-		} else {
-			system.releaseMemory(process.id);
-			process.set('id', null);
+		let system = os.get('system');
+		let processControlList = os.get('processControlList');
+
+		switch(instruction.get('type')) {
+			case 0:
+				createProcess(os, instruction.processId, instruction.codeSize, instruction.dataSize);
+				break;
+			case 1:
+				system.releaseMemory(process.id);
+				process.set('id', null);
+				break;
+			case 2:
+				
+				break;
+			case 3:
+
+				break;
+			case 4:
+
+				break;
+			case 5:
+
+				break;
+			default:
+				throw "Command not recognized";
+				break;
+
 		}
 	},
 	requestMasterPageTable(frameId) {

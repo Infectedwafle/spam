@@ -1,6 +1,6 @@
-const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5) {
+const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5, commandsPerProcess = 5) {
 	let processes = []; // a list of process that will be turned into instructions
-	let instructions = new Array(numberOfProcesses * 2); // an array of objects to turn into the instruction string
+	let instructions = new Array((numberOfProcesses * 2) + (numberOfProcesses * commandsPerProcess)); // an array of objects to turn into the instruction string
 
 	for(let i = 0; i < numberOfProcesses; i++) {
 		processes.push(generateProcess(i, memorySize, pageFrameSize));
@@ -13,34 +13,18 @@ const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5) {
 	}
 
 	for(let i = 0; i < processes.length; i++) {
-		let createIndex = null;
-		while(createIndex === null) {
-			createIndex = availableIndexes[getRandomInt(0, availableIndexes.length - 1)];
-			if(createIndex !== null) {
-				availableIndexes.splice(availableIndexes.indexOf(createIndex), 1);
-			} else {
-				createIndex = null;
-			}
-		}
-
-		let terminateIndex = null;
-		while(terminateIndex === null) {
-			if(availableIndexes.length === 1) {
-				terminateIndex = availableIndexes[0];
-			} else {
-				terminateIndex = availableIndexes[getRandomInt(1, availableIndexes.length + 1)];
-			}
-			
-			if(terminateIndex !== null && terminateIndex > createIndex) {
-				availableIndexes.splice(availableIndexes.indexOf(terminateIndex), 1);
-			} else {
-				terminateIndex = null;
-			}
-		}
-
+		let createIndex = getCreateProcessIndex(availableIndexes, commandsPerProcess);
 		instructions[createIndex] = convertProcessToInstruction(processes[i]);
-		instructions[terminateIndex] = createProcessTerminationInstruction(processes[i].id);
+
+		let commandIndexes = [];
+		for(let j = 0; j < commandsPerProcess; j++) {
+			let commandIndex = getProcessCommandIndex(availableIndexes, createIndex);
+			instructions[commandIndex] = createProcessCommandInstruction(processes[i].id, memorySize, pageFrameSize);
+			commandIndexes.push(commandIndex);
+		}
 		
+		let terminateIndex = getTerminateProcessIndex(availableIndexes, Math.max(createIndex, ...commandIndexes));
+		instructions[terminateIndex] = createProcessTerminationInstruction(processes[i].id);	
 	}
 
 	return instructions.join('\n');
@@ -55,13 +39,68 @@ const generateProcess = function(processId, memorySize, pageFrameSize) {
 }
 
 const convertProcessToInstruction = function(process) {
-	let instruction = `${process.id} ${process.codeSize} ${process.dataSize}`;
+	let instruction = `0 ${process.id} ${process.codeSize} ${process.dataSize}`;
 	return instruction;
 }
 
 const createProcessTerminationInstruction = function(processId) {
-	let instruction = `${processId} -1`;
+	let instruction = `1 ${processId}`;
 	return instruction;
+}
+
+const createProcessCommandInstruction = function(processId, memorySize, pageFrameSize) {
+	let commandId = getRandomInt(2, 5);
+	let randomDataSize = getRandomInt(1, pageFrameSize * Math.min(10, memorySize / pageFrameSize));
+	let instruction = `${commandId} ${processId} ${randomDataSize}`;
+	return instruction;
+}
+
+const getCreateProcessIndex = function(availableIndexes, commandsPerProcess) {
+	let createIndex = null;
+
+	while(createIndex === null) {
+		createIndex = availableIndexes[getRandomInt(0, availableIndexes.length - (commandsPerProcess + 1))];
+		if(createIndex !== null) {
+			availableIndexes.splice(availableIndexes.indexOf(createIndex), 1);
+		} else {
+			createIndex = null;
+		}
+	}
+
+	return createIndex;
+}
+
+const getProcessCommandIndex = function(availableIndexes, createIndex) {
+	let commandIndex = null;
+	while(commandIndex === null) {
+		commandIndex = availableIndexes[getRandomInt(0, availableIndexes.length - 1)];
+		if(commandIndex !== null && commandIndex > createIndex) {
+			availableIndexes.splice(availableIndexes.indexOf(commandIndex), 1);
+		} else {
+			commandIndex = null;
+		}
+	}
+
+	return commandIndex;
+}
+
+const getTerminateProcessIndex = function(availableIndexes, minIndex) {
+	let terminateIndex = null;
+	while(terminateIndex === null) {
+		if(availableIndexes.length === 1) {
+			terminateIndex = availableIndexes[0];
+		} else {
+			terminateIndex = availableIndexes[getRandomInt(1, availableIndexes.length + 1)];
+		}
+		
+		if(terminateIndex !== null && terminateIndex > minIndex) {
+			availableIndexes.splice(availableIndexes.indexOf(terminateIndex), 1);
+		} else {
+			terminateIndex = null;
+		}
+	}
+
+	return terminateIndex;
 }
 
 /**
