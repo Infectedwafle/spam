@@ -33,7 +33,15 @@ export default EmberObject.extend({
 			}
 		});
 	},
-	requestFrame() {
+	requestMemoryFrame(id) {
+		let frameList = this.get('frameList');
 
+		let frame = frameList.findBy('id', id);
+
+		if(frame) {
+			return frame;
+		} else {
+			//load frame from swap space the fetch frame
+		}
 	}
 });

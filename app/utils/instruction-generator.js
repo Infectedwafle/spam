@@ -3,7 +3,7 @@ const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5) {
 	let instructions = new Array(numberOfProcesses * 2); // an array of objects to turn into the instruction string
 
 	for(let i = 0; i < numberOfProcesses; i++) {
-		processes.push(generateProcess(i, memorySize));
+		processes.push(generateProcess(i, memorySize, pageFrameSize));
 	}
 
 	// Initialize and declare availableIndex array
@@ -46,11 +46,11 @@ const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5) {
 	return instructions.join('\n');
 }
 
-const generateProcess = function(processId, memorySize) {
+const generateProcess = function(processId, memorySize, pageFrameSize) {
 	return {
 		id: processId,
-		codeSize: getRandomInt(1, memorySize / 6),
-		dataSize: getRandomInt(1, memorySize / 4),
+		codeSize: getRandomInt(1, pageFrameSize * Math.min(10, memorySize / pageFrameSize)),
+		dataSize: getRandomInt(1, pageFrameSize * Math.min(10, memorySize / pageFrameSize)),
 	}
 }
 

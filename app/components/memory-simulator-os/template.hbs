@@ -19,7 +19,7 @@
 		<div class="col-sm">
 			<div class="row process-list">
 				{{#each os.processControlList as |process|}}
-					<div class="process">
+					<div class="process" {{action 'selectMasterPageTable' process.frameId}}>
 						{{#if (eq process.id null)}}
 							{{!-- Show Nothing --}}
 						{{else}}
@@ -32,7 +32,7 @@
 		<div class="col-sm">
 			<div class="row page-list">
 				{{#each os.masterPageTable.pages as |page|}}
-					<div class="page">
+					<div class="page" {{action 'selectSecondaryPageTable' page.frameId}}>
 						{{#if (eq page.frameId null)}}
 							{{!-- Show Nothing --}}
 						{{else}}

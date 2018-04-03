@@ -12,9 +12,17 @@ export default EmberObject.extend({
 		let operatingSystem = this.get('operatingSystem');
 		let instructions = this.get('instructions');
 
-		let instruction = instructions[instructionIndex];
+		if(instructionIndex < instructions.length) {
+			let instruction = instructions[instructionIndex];
 
-		operatingSystem.runInstruction(instruction);
+			let val = operatingSystem.runInstruction(instruction);
+
+			if(val === null) {
+				// show System Failure
+			}
+		} else {
+			// end simulation
+		}
 	},
 	reserveMemory(amount) {
 		let memoryUnit = this.get('memoryUnit');
@@ -26,9 +34,9 @@ export default EmberObject.extend({
 
 		memoryUnit.releaseMemory(processId);
 	},
-	requestFrame(id) {
+	requestMemoryFrame(id) {
 		let memoryUnit = this.get('memoryUnit');
 
-		memoryUnit.requestFrame(id);
+		return memoryUnit.requestMemoryFrame(id);
 	}
 });

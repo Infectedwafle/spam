@@ -15,7 +15,7 @@
 		</div>
 		<div class="col-2">
 			<div>
-				Page/Frame Size
+				Page/Frame Size (bytes)
 			</div>
 			<div>
 				{{input class='config-input' value=pageFrameSize}}
@@ -23,7 +23,15 @@
 		</div>
 		<div class="col-2">
 			<div>
-				Memory Size
+				Page/Frame Size (bits)
+			</div>
+			<div>
+				{{input class='config-input' value=pageFrameSizeBits}}
+			</div>
+		</div>
+		<div class="col-2">
+			<div>
+				Memory Size (bytes)
 			</div>
 			<div>
 				{{input class='config-input' value=memorySize}}
@@ -31,10 +39,10 @@
 		</div>
 		<div class="col-2">
 			<div>
-				System Size
+				Memory Size (bits)
 			</div>
 			<div>
-				{{input class='config-input' value=instructionSize}}
+				{{input class='config-input' value=memorySizeBits}}
 			</div>
 		</div>
 	</div>

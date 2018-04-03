@@ -13,7 +13,7 @@ export default Controller.extend({
 	system: computed('_system', function() {
 		return this.get('_system');
 	}),
-	_pageFrameSize: 512,
+	_pageFrameSize: 256,
 	pageFrameSize: computed('_pageFrameSize', 'system.pageFrameSize', {
 		get() {
 			return this.get('_pageFrameSize');
@@ -43,13 +43,22 @@ export default Controller.extend({
 			return this.get('_numberOfProcesses');
 		}
 	}),
-	instructionSize: computed('memorySize', {
+	memorySizeBits: computed('memorySize', {
 		get() {
 			return Math.log2(this.get('memorySize'));
 		},
 		set(key, val) {
 			this.set('memorySize', Math.pow(2, val));
 			return Math.log2(this.get('memorySize'));
+		}
+	}),
+	pageFrameSizeBits: computed('pageFrameSize', {
+		get() {
+			return Math.log2(this.get('pageFrameSize'));
+		},
+		set(key, val) {
+			this.set('pageFrameSize', Math.pow(2, val));
+			return Math.log2(this.get('pageFrameSize'));
 		}
 	}),
 	instructionCounter: 0,
