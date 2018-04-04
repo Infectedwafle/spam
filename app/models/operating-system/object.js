@@ -93,12 +93,12 @@ const createCodePageTable = function(process, system, os, codeSize) {
 
 	// if null frames could not be allocated / system out of memory
 	if(frames !== null) {
-		let size = codeSize;
+		let tempSize = codeSize;
 		frames.forEach((frame) => {
 			frame.set('processId', process.id);
 			frame.set('type', 'Code');
-			frame.set('size', size - pageSize > 0 ? pageSize : size);
-			size -= pageSize;
+			frame.set('size', tempSize - pageSize > 0 ? pageSize : tempSize);
+			tempSize -= pageSize;
 			updatePageTable(codePageTable, frame);
 		});
 	}
@@ -106,24 +106,45 @@ const createCodePageTable = function(process, system, os, codeSize) {
 	return codePageTable;
 }
 
-const createDataPageTable = function(process, system, os, codeSize) {
+const createDataPageTable = function(process, system, os, dataSize) {
 	let dataPageTable = createPageTable(os, process.get('id'), 'Data');
-	let frames = reserveMemory(system, os, codeSize);
+	let frames = reserveMemory(system, os, dataSize);
 	let pageSize = os.get('pageSize');
 
 	// if null frames could not be allocated / system out of memory
 	if(frames !== null) {
-		let size = codeSize;
+		let tempSize = dataSize;
 		frames.forEach((frame) => {
 			frame.set('processId', process.id);
 			frame.set('type', 'Data');
-			frame.set('size', size - pageSize > 0 ? pageSize : size);
-			size -= pageSize;
+			frame.set('size', tempSize - pageSize > 0 ? pageSize : tempSize);
+			tempSize -= pageSize;
 			updatePageTable(dataPageTable, frame);
 		});
 	}
 
 	return dataPageTable;
+}
+
+const createStackPageTable = function(process, system, os, stackSize) {
+	let stackPageTable = createPageTable(os, process.get('id'), 'Stack');
+	let frames = reserveMemory(system, os, stackSize);
+	let pageSize = os.get('pageSize');
+
+	console.log(stackSize);
+	// if null frames could not be allocated / system out of memory
+	if(frames !== null) {
+		let tempSize = stackSize;
+		frames.forEach((frame) => {
+			frame.set('processId', process.id);
+			frame.set('type', 'Stack');
+			frame.set('size', tempSize - pageSize > 0 ? pageSize : tempSize);
+			tempSize -= pageSize;
+			updatePageTable(stackPageTable, frame);
+		});
+	}
+
+	return stackPageTable;
 }
 
 const reserveMemory = function(system, os,  size) {
@@ -274,7 +295,46 @@ const useData = function(os, processId, size) {
 }
 
 const useStack = function(os, processId, size) {
+	let system = os.get('system');
+	let pcb = os.get('processControlList');
 
+	let process = pcb.findBy('id', processId);
+
+	if(process) {
+		let masterPageTableFrame = system.requestMemoryFrame(process.get('frameId'));
+
+		if(masterPageTableFrame) {
+			let stackPageTablePage = masterPageTableFrame.get('data.pages').findBy('type', 'Stack');
+			let stackPageTableFrame = null;
+
+			if(stackPageTablePage) {
+				stackPageTableFrame = system.requestMemoryFrame(stackPageTablePage.get('frameId'));
+			}	
+			
+			if(stackPageTableFrame) {
+				let codeFrames = [];
+
+				stackPageTableFrame.get('data.pages').forEach((page) => {
+					system.requestMemoryFrame(page.get('frameId'));
+				});
+			} else {
+				// allocate stack
+				let stackPageTable = createStackPageTable(process, system, os, size);
+
+				stackPageTableFrame = reserveMemory(system, os, os.get('pageSize'));
+				if(stackPageTableFrame) {
+					stackPageTableFrame[0].set('data', stackPageTable);
+					stackPageTableFrame[0].set('size', os.get('pageSize'));
+					stackPageTableFrame[0].set('processId', process.get('id'));
+					stackPageTableFrame[0].set('type', 'SPT');
+					updatePageTable(masterPageTableFrame.get('data'), stackPageTableFrame[0], 'Stack');
+				} else {
+					return null;
+				}
+
+			}
+		}
+	}
 }
 
 const useHeap = function(os, processId, size) {

@@ -13,7 +13,7 @@ export default Controller.extend({
 	system: computed('_system', function() {
 		return this.get('_system');
 	}),
-	_pageFrameSize: 256,
+	_pageFrameSize: 1024,
 	pageFrameSize: computed('_pageFrameSize', 'system.pageFrameSize', {
 		get() {
 			return this.get('_pageFrameSize');
@@ -23,7 +23,7 @@ export default Controller.extend({
 			return this.get('_pageFrameSize');
 		}
 	}),
-	_memorySize: 8192,
+	_memorySize: 32768,
 	memorySize: computed('_memorySize', 'system.memorySize', {
 		get() {
 			return this.get('_memorySize');
@@ -33,7 +33,7 @@ export default Controller.extend({
 			return this.get('_memorySize');
 		}
 	}),
-	_numberOfProcesses: 1,
+	_numberOfProcesses: 5,
 	numberOfProcesses: computed('_numberOfProcesses', {
 		get() {
 			return this.get('_numberOfProcesses');
@@ -132,26 +132,26 @@ export default Controller.extend({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1])
 							});
-						case 2: // use stack if no stack create one
+						case 2: // use code
 							return Instruction.create({
 								type: Number(instructionParts[0]),
-								processId: Number(instructionParts[1]),
-								stackSize: Number(instructionParts[2])
+								processId: Number(instructionParts[1])
 							});
-						case 3: // use heap if no heap create one
+						case 3: // use data
 							return Instruction.create({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1]),
 								heapSize: Number(instructionParts[2])
 							});
 							break;
-						case 4: // use code
+						case 4: // use stack if no stack create one
 							return Instruction.create({
 								type: Number(instructionParts[0]),
-								processId: Number(instructionParts[1])
+								processId: Number(instructionParts[1]),
+								stackSize: Number(instructionParts[2])
 							});
 							break;
-						case 5: // use data
+						case 5: // use heap if no heap create one
 							return Instruction.create({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1]),
