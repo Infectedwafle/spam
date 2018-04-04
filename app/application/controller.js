@@ -102,8 +102,9 @@ export default Controller.extend({
 			});
 
 			// Init Frames
+			// id is set when loading pages from swap space
 			for(let i = 0; i < memoryUnit.get('frameList').length; i++) {
-				memoryUnit.get('frameList')[i] = MemoryFrame.create({id: i, processId: null});
+				memoryUnit.get('frameList')[i] = MemoryFrame.create({id: null, processId: null});
 			}
 
 			// Init Swap Frames

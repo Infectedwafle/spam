@@ -76,10 +76,11 @@ export default EmberObject.extend({
 	}
 });
 
-const updatePageTable = function(pageTable, frame) {
+const updatePageTable = function(pageTable, frame, type = null) {
 	for(let i = 0; i < pageTable.get('pages').length; i++) {
 		if(pageTable.get('pages')[i].get('frameId') === null) {
 			pageTable.get('pages')[i].set('frameId', frame.get('id'));
+			pageTable.get('pages')[i].set('type',  type);
 			break;
 		}
 	}
@@ -180,7 +181,7 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		codePageTableFrame[0].set('size', pageSize);
 		codePageTableFrame[0].set('processId', process.get('id'));
 		codePageTableFrame[0].set('type', 'CPT');
-		updatePageTable(pageTable, codePageTableFrame[0]);
+		updatePageTable(pageTable, codePageTableFrame[0], 'Code');
 	} else {
 		return null;
 	}
@@ -191,7 +192,7 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		dataPageTableFrame[0].set('size', pageSize);
 		dataPageTableFrame[0].set('processId', process.get('id'));
 		dataPageTableFrame[0].set('type', 'DPT');
-		updatePageTable(pageTable, dataPageTableFrame[0]);
+		updatePageTable(pageTable, dataPageTableFrame[0], 'Data');
 	} else {
 		return null;
 	}
@@ -219,6 +220,66 @@ const createProcess = function(os, id, codeSize, dataSize) {
 
 	return process;
 };
+
+/**
+ * This is a simple instruction to bring code frames from the swap space to ram
+ * @param  {EmberObject} os     a reference to the Operating System object
+ * @param  {Number} processId 	Unique id for a process
+ * @return {null}           	No return value
+ */
+const useCode = function(os, processId) {
+	let system = os.get('system');
+	let pcb = os.get('processControlList');
+
+	let process = pcb.findBy('id', processId);
+
+	if(process) {
+		let masterPageTableFrame = system.requestMemoryFrame(process.get('frameId'));
+
+		if(masterPageTableFrame) {
+			let codePageTableFrame = system.requestMemoryFrame(masterPageTableFrame.get('data.pages').findBy('type', 'Code').get('frameId'));
+			
+			if(codePageTableFrame) {
+				let codeFrames = [];
+
+				codePageTableFrame.get('data.pages').forEach((page) => {
+					system.requestMemoryFrame(page.get('frameId'));
+				});
+			}	
+		}
+	}
+}
+
+const useData = function(os, processId, size) {
+	let system = os.get('system');
+	let pcb = os.get('processControlList');
+
+	let process = pcb.findBy('id', processId);
+
+	if(process) {
+		let masterPageTableFrame = system.requestMemoryFrame(process.get('frameId'));
+
+		if(masterPageTableFrame) {
+			let dataPageTableFrame = system.requestMemoryFrame(masterPageTableFrame.get('data.pages').findBy('type', 'Data').get('frameId'));
+			
+			if(dataPageTableFrame) {
+				let codeFrames = [];
+
+				dataPageTableFrame.get('data.pages').forEach((page) => {
+					system.requestMemoryFrame(page.get('frameId'));
+				});
+			}	
+		}
+	}
+}
+
+const useStack = function(os, processId, size) {
+
+}
+
+const useHeap = function(os, processId, size) {
+	
+}
 
 const createPageTable = function(os, processId, type) {
 	let table = PageTable.create({
