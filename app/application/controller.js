@@ -23,7 +23,7 @@ export default Controller.extend({
 			return this.get('_pageFrameSize');
 		}
 	}),
-	_memorySize: 32768,
+	_memorySize: 16384,
 	memorySize: computed('_memorySize', 'system.memorySize', {
 		get() {
 			return this.get('_memorySize');
@@ -41,6 +41,16 @@ export default Controller.extend({
 		set(key, val) {
 			this.set('_numberOfProcesses', val);
 			return this.get('_numberOfProcesses');
+		}
+	}),
+	_instructionsPerProcess: 5,
+	instructionsPerProcess: computed('_instructionsPerProcess', {
+		get() {
+			return this.get('_instructionsPerProcess');
+		},
+		set(key, val) {
+			this.set('_instructionsPerProcess', val);
+			return this.get('_instructionsPerProcess');
 		}
 	}),
 	memorySizeBits: computed('memorySize', {
@@ -80,6 +90,7 @@ export default Controller.extend({
 			let system = System.create({
 				frameSize: Number(this.get('pageFrameSize')),
 				memorySize: Number(this.get('memorySize')),
+				log: []
 			});
 
 			let operatingSystem = OperatingSystem.create({
@@ -143,21 +154,18 @@ export default Controller.extend({
 								processId: Number(instructionParts[1]),
 								heapSize: Number(instructionParts[2])
 							});
-							break;
 						case 4: // use stack if no stack create one
 							return Instruction.create({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1]),
 								stackSize: Number(instructionParts[2])
 							});
-							break;
 						case 5: // use heap if no heap create one
 							return Instruction.create({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1]),
 								dataSize: Number(instructionParts[2])
 							});
-							break
 						default:
 							throw "Command not recognized";
 							break;
@@ -169,8 +177,8 @@ export default Controller.extend({
 
 			this.set('_system', system);
 		},
-		generateInstructions(pageFrameSize, memorySize, numberOfProcesses) {
-			let instructions = InstructionGenerator.generate(Number(pageFrameSize), Number(memorySize), Number(numberOfProcesses));
+		generateInstructions(pageFrameSize, memorySize, numberOfProcesses, instructionsPerProcess) {
+			let instructions = InstructionGenerator.generate(Number(pageFrameSize), Number(memorySize), Number(numberOfProcesses), Number(instructionsPerProcess));
 			this.set('instructions', instructions);
 		},
 		loadInstruction(counter) {

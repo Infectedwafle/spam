@@ -1,4 +1,4 @@
-import EmberObject from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 // import MemoryPage from 'spam/models/memory-page/object';
 // import MemoryFrame from 'spam/models/memory-frame/object';
 
@@ -8,7 +8,18 @@ export default EmberObject.extend({
 	memoryUnit: null,
 	operatingSystem: null,
 	instructions: null,
+	_log: null,
+	log: computed('_log.[]', {
+		get() {
+			return this.get('_log');
+		},
+		set(key, val) {
+			this.set('_log', val);
+			return this.get('_log');
+		}
+	}),
 	loadInstruction(instructionIndex) {
+		let log = this.get('log');
 		let operatingSystem = this.get('operatingSystem');
 		let instructions = this.get('instructions');
 
@@ -18,10 +29,18 @@ export default EmberObject.extend({
 			let val = operatingSystem.runInstruction(instruction);
 
 			if(val === null) {
-				// show System Failure
+				log.pushObject(EmberObject.create({
+					message: "Critical Failure: System out of memory!",
+					type: 'error'
+				}));
+
+				console.log(log);
 			}
 		} else {
-			// end simulation
+			log.pushObject(EmberObject.create({
+				message: "Simulation Complete",
+				type: 'success'
+			}));
 		}
 	},
 	reserveMemory(amount) {

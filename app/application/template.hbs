@@ -5,7 +5,7 @@
 </div>
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-2">
+		<div class="col-3">
 			<div>
 				Number Of Processes
 			</div>
@@ -47,13 +47,23 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-2">
+		<div class="col-3">
+			<div>
+				Instructions Per Process
+			</div>
+			<div>
+				{{input class='config-input' value=instructionsPerProcess}}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-3">
 			<div>
 				Actions
 			</div>
 			<div class="row">
 				<div class="col-sm">
-					<button class="action-buttons" {{action 'generateInstructions' pageFrameSize memorySize numberOfProcesses}}>Generate Instructions</button>
+					<button class="action-buttons" {{action 'generateInstructions' pageFrameSize memorySize numberOfProcesses instructionsPerProcess}}>Generate Instructions</button>
 				</div>
 			</div>
 		</div>
@@ -61,7 +71,7 @@
 </div>
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-2">
+		<div class="col-3">
 			<div class="row">
 				<div class="col-12">
 					{{textarea class='instructions-textarea' value=instructions rows=25}}
@@ -71,8 +81,16 @@
 					<button class="action-buttons" {{action 'loadInstruction' instructionCounter}}>Run</button>
 				</div>
 			</div>
+			<div class="row">
+				{{log system}}
+				{{#each system.log as |entry|}}
+					<div class="col-12">
+						{{entry.message}}
+					</div>
+				{{/each}}
+			</div>
 		</div>
-		<div class="col-10">
+		<div class="col-9">
 			{{memory-simulator
 				system=system
 			}}

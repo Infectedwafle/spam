@@ -39,22 +39,22 @@ export default EmberObject.extend({
 
 		switch(instruction.get('type')) {
 			case 0:
-				createProcess(os, instruction.processId, instruction.codeSize, instruction.dataSize);
+				return createProcess(os, instruction.processId, instruction.codeSize, instruction.dataSize);
 				break;
 			case 1:
-				system.releaseMemory(instruction.get('processId'));
+				return system.releaseMemory(instruction.get('processId'));
 				break;
 			case 2:
-				useCode(os, instruction.processId, instruction.codeSize);
+				return useCode(os, instruction.processId, instruction.codeSize);
 				break;
 			case 3:
-				useData(os, instruction.processId, instruction.dataSize);
+				return useData(os, instruction.processId, instruction.dataSize);
 				break;
 			case 4:
-				useStack(os, instruction.processId, instruction.stackSize);
+				return useStack(os, instruction.processId, instruction.stackSize);
 				break;
 			case 5:
-				useHeap(os, instruction.processId, instruction.heapSize);
+				return useHeap(os, instruction.processId, instruction.heapSize);
 				break;
 			default:
 				throw "Command not recognized";
@@ -101,6 +101,8 @@ const createCodePageTable = function(process, system, os, codeSize) {
 			tempSize -= pageSize;
 			updatePageTable(codePageTable, frame);
 		});
+	} else {
+		return null;
 	}
 
 	return codePageTable;
@@ -121,6 +123,8 @@ const createDataPageTable = function(process, system, os, dataSize) {
 			tempSize -= pageSize;
 			updatePageTable(dataPageTable, frame);
 		});
+	} else {
+		return null;
 	}
 
 	return dataPageTable;
@@ -142,6 +146,8 @@ const createStackPageTable = function(process, system, os, stackSize) {
 			tempSize -= pageSize;
 			updatePageTable(stackPageTable, frame);
 		});
+	} else {
+		return null;
 	}
 
 	return stackPageTable;
@@ -151,7 +157,6 @@ const reserveMemory = function(system, os,  size) {
 	let frames = system.reserveMemory(size)
 
 	if(frames === null) {
-		os.set('error', "System out of memory");
 		return null;
 	} else {
 		return frames
@@ -162,6 +167,11 @@ const createProcess = function(os, id, codeSize, dataSize) {
 	let system = os.get('system');
 	let processControlList = os.get('processControlList');
 	let pageSize = os.get('pageSize');
+
+	system.get('log').pushObject(EmberObject.create({
+		message: `Process ${id} entered the system`,
+		type: 'info'
+	}));
 
 	// create process model
 	let process = Process.create({
@@ -258,8 +268,13 @@ const useCode = function(os, processId) {
 		let masterPageTableFrame = system.requestMemoryFrame(process.get('frameId'));
 
 		if(masterPageTableFrame) {
-			let codePageTableFrame = system.requestMemoryFrame(masterPageTableFrame.get('data.pages').findBy('type', 'Code').get('frameId'));
-			
+			let codePageTablePage = masterPageTableFrame.get('data.pages').findBy('type', 'Code');
+			let codePageTableFrame = null;
+
+			if(codePageTablePage) {
+				codePageTableFrame = system.requestMemoryFrame(codePageTablePage.get('frameId'));
+			}
+
 			if(codePageTableFrame) {
 				let codeFrames = [];
 
@@ -281,10 +296,14 @@ const useData = function(os, processId, size) {
 		let masterPageTableFrame = system.requestMemoryFrame(process.get('frameId'));
 
 		if(masterPageTableFrame) {
-			let dataPageTableFrame = system.requestMemoryFrame(masterPageTableFrame.get('data.pages').findBy('type', 'Data').get('frameId'));
-			
+			let dataPageTablePage = masterPageTableFrame.get('data.pages').findBy('type', 'Data');
+			let dataPageTableFrame = null;
+
+			if(dataPageTablePage) {
+				dataPageTableFrame = system.requestMemoryFrame(dataPageTablePage.get('frameId'));
+			}
 			if(dataPageTableFrame) {
-				let codeFrames = [];
+				let dataFrames = [];
 
 				dataPageTableFrame.get('data.pages').forEach((page) => {
 					system.requestMemoryFrame(page.get('frameId'));
@@ -309,7 +328,7 @@ const useStack = function(os, processId, size) {
 
 			if(stackPageTablePage) {
 				stackPageTableFrame = system.requestMemoryFrame(stackPageTablePage.get('frameId'));
-			}	
+			}
 			
 			if(stackPageTableFrame) {
 				let codeFrames = [];
