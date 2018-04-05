@@ -19,7 +19,7 @@ const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5, comm
 		let commandIndexes = [];
 		for(let j = 0; j < commandsPerProcess; j++) {
 			let commandIndex = getProcessCommandIndex(availableIndexes, createIndex);
-			instructions[commandIndex] = createProcessCommandInstruction(processes[i].id, memorySize, pageFrameSize);
+			instructions[commandIndex] = createProcessCommandInstruction(processes[i].id, memorySize, pageFrameSize, numberOfProcesses);
 			commandIndexes.push(commandIndex);
 		}
 		
@@ -33,8 +33,8 @@ const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5, comm
 const generateProcess = function(processId, memorySize, pageFrameSize, numberOfProcesses) {
 	return {
 		id: processId,
-		codeSize: getRandomInt(1, pageFrameSize * Math.floor((memorySize / pageFrameSize) / (numberOfProcesses + 1))),
-		dataSize: getRandomInt(1, pageFrameSize * Math.floor((memorySize / pageFrameSize) / (numberOfProcesses + 1))),
+		codeSize: getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1)) * .1) || 1)),
+		dataSize: getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1)) * .1) || 1)),
 	}
 }
 
@@ -48,9 +48,9 @@ const createProcessTerminationInstruction = function(processId) {
 	return instruction;
 }
 
-const createProcessCommandInstruction = function(processId, memorySize, pageFrameSize) {
-	let commandId = getRandomInt(2, 5);
-	let randomDataSize = getRandomInt(1, pageFrameSize * Math.min(10, memorySize / pageFrameSize));
+const createProcessCommandInstruction = function(processId, memorySize, pageFrameSize, numberOfProcesses) {
+	let commandId = getRandomInt(2, 6);
+	let randomDataSize = getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1)) * .1) || 1));
 	let instruction = `${commandId} ${processId} ${randomDataSize}`;
 	
 	if(commandId === 2) {

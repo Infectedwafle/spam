@@ -61,5 +61,13 @@ body {
 	padding: 5px;
 }
 
+.log-error {
+	color: red;
+}
+
+.log-info {
+	color: lighten(blue, 40%);
+}
+
 @import "ember-cli-bootstrap-4/bootstrap-grid";
 @import "ember-power-select";

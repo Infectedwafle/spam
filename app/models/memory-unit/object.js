@@ -1,6 +1,7 @@
 import EmberObject from '@ember/object';
 
 export default EmberObject.extend({
+	system: null,
 	frameSize: null,
 	frameList: null,
 	swapList: null,
@@ -38,39 +39,51 @@ export default EmberObject.extend({
 		frameList.forEach((frame) => {
 			if(frame.get('processId') === processId) {
 				frame.set('processId', null);
+				frame.set('id', null);
 			}
 		});
 	},
 	/**
-	 * requests a specfic frame
+	 * requests a specfic frame from RAM id loaded
 	 * @param  {[type]} id [description]
 	 * @return {[type]}    [description]
 	 */
-	requestMemoryFrame(id) {
+	requestMemoryFrameFromRam(id) {
+		let system = this.get('system');
 		let frameList = this.get('frameList');
-
 		let ramFrame = frameList.findBy('id', id);
 
 		if(ramFrame) {
+			system.get('log').pushObject(EmberObject.create({
+				message: `Frame ${id} was found in RAM`,
+				type: 'info'
+			}));
 			return ramFrame;
 		} else {
-			//load frame from swap space the fetch frame
-			let swapList = this.get('swapList');
-
-			let swapFrame = swapList.findBy('id', id);
-
-			if(swapFrame) {
-				//copy frames to memory then return the memory frame
-				return copyFrameToRam(frameList, swapFrame);
-			} else {
-				return null; // the frame does not exist, this is a problem
-			}
+			system.get('log').pushObject(EmberObject.create({
+				message: `Frame ${id} was not found in RAM throwing page fault`,
+				type: 'info'
+			}));
+			return null; // throw page fault
+		}
+	},
+	// looks for a frame in swap space and copies it to ram before return to OS
+	requestMemoryFrameFromSwap(id) {
+		let system = this.get('system');
+		let swapList = this.get('swapList');
+		let swapFrame = swapList.findBy('id', id);
+		if(swapFrame) {
+			let frameList = this.get('frameList');
+			//copy frames to memory then return the memory frame
+			return copyFrameToRam(frameList, swapFrame);
+		} else {
+			return null; // the frame does not exist, this is a problem
 		}
 	}
 });
 
 const copyFrameToRam = function(frameList, frame) {
-	// check for empty frames
+	// check for empty frames in ram
 	for(let i = 0; i < frameList.length; i++) {
 		if(frameList[i].get('id') === null) {
 			frameList[i].set('id', frame.get('id'));
@@ -85,7 +98,7 @@ const copyFrameToRam = function(frameList, frame) {
 	}
 
 	let ramFrame = frameList[0];
-	// if no ram frames are open use lru
+	// if no ram frames are open use lru to find old frames
 	for(let i = 1; i < frameList.length; i++) {
 		if(frameList[i].get('timeStamp') < ramFrame.get('timeStamp')) {
 			ramFrame = frameList[i];

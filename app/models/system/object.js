@@ -18,6 +18,9 @@ export default EmberObject.extend({
 			return this.get('_log');
 		}
 	}),
+	logView: computed('log.[]', function() {
+		return this.get('_log').slice().reverseObjects();
+	}),
 	loadInstruction(instructionIndex) {
 		let log = this.get('log');
 		let operatingSystem = this.get('operatingSystem');
@@ -33,8 +36,6 @@ export default EmberObject.extend({
 					message: "Critical Failure: System out of memory!",
 					type: 'error'
 				}));
-
-				console.log(log);
 			}
 		} else {
 			log.pushObject(EmberObject.create({
@@ -53,9 +54,29 @@ export default EmberObject.extend({
 
 		memoryUnit.releaseMemory(processId);
 	},
-	requestMemoryFrame(id) {
+	requestMemoryFrameFromRam(id) {
 		let memoryUnit = this.get('memoryUnit');
 
-		return memoryUnit.requestMemoryFrame(id);
+		return memoryUnit.requestMemoryFrameFromRam(id);
+	},
+	requestMemoryFrameFromSwap(id) {
+		let memoryUnit = this.get('memoryUnit');
+
+		return memoryUnit.requestMemoryFrameFromSwap(id);
 	}
 });
+
+/**
+ * Non-destructive array reverse function
+ * @param  {array} a [description]
+ * @return {array}   [description]
+ */
+const reverseArray = function(a) {
+	let temp = [];
+	let len = a.length;
+
+	for (var i = (len - 1); i >= 0; i--) {
+		temp.push(a[i]);
+	}
+	return temp;
+}

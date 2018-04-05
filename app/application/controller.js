@@ -23,7 +23,7 @@ export default Controller.extend({
 			return this.get('_pageFrameSize');
 		}
 	}),
-	_memorySize: 16384,
+	_memorySize: 65536,
 	memorySize: computed('_memorySize', 'system.memorySize', {
 		get() {
 			return this.get('_memorySize');
@@ -33,7 +33,7 @@ export default Controller.extend({
 			return this.get('_memorySize');
 		}
 	}),
-	_numberOfProcesses: 5,
+	_numberOfProcesses: 3,
 	numberOfProcesses: computed('_numberOfProcesses', {
 		get() {
 			return this.get('_numberOfProcesses');
@@ -152,7 +152,7 @@ export default Controller.extend({
 							return Instruction.create({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1]),
-								heapSize: Number(instructionParts[2])
+								dataSize: Number(instructionParts[2])
 							});
 						case 4: // use stack if no stack create one
 							return Instruction.create({
@@ -164,7 +164,7 @@ export default Controller.extend({
 							return Instruction.create({
 								type: Number(instructionParts[0]),
 								processId: Number(instructionParts[1]),
-								dataSize: Number(instructionParts[2])
+								heapSize: Number(instructionParts[2])
 							});
 						default:
 							throw "Command not recognized";
@@ -186,6 +186,27 @@ export default Controller.extend({
 			system.loadInstruction(counter);
 
 			this.set('instructionCounter', counter + 1);
+		},
+		loadAllInstruction(counter) {
+			let cont = this;
+			let system = this.get('system');
+
+			for(let i = counter; i <= system.get('instructions.length'); i++) {
+				setTimeout(function() {
+					system.loadInstruction(i);
+					cont.set('instructionCounter', cont.get('instructionCounter') + 1);
+				}, i * 500);
+			}
+		},
+		reverseInstruction(counter) {
+			this.send('loadConfig');
+			let system = this.get('system');
+			
+			for(let i = 0; i < counter - 1; i++) {
+				system.loadInstruction(i);
+			}
+
+			this.set('instructionCounter', counter -1);
 		}
 	}
 });

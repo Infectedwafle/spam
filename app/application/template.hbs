@@ -78,13 +78,20 @@
 				</div>
 				<div class="col-12">
 					<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
+				</div>
+				<div class="col-4">
+					<button class="action-buttons" {{action 'reverseInstruction' instructionCounter}}>Back</button>
+				</div>
+				<div class="col-4">
 					<button class="action-buttons" {{action 'loadInstruction' instructionCounter}}>Run</button>
+				</div>
+				<div class="col-4">
+					<button class="action-buttons" {{action 'loadAllInstruction' instructionCounter}}>Run All</button>
 				</div>
 			</div>
 			<div class="row">
-				{{log system}}
-				{{#each system.log as |entry|}}
-					<div class="col-12">
+				{{#each system.logView as |entry|}}
+					<div class="col-12 {{if (eq entry.type 'error') 'log-error'}} {{if (eq entry.type 'info') 'log-info'}}">
 						{{entry.message}}
 					</div>
 				{{/each}}
