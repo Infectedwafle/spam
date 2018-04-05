@@ -8,6 +8,7 @@ export default EmberObject.extend({
 	memoryUnit: null,
 	operatingSystem: null,
 	instructions: null,
+	// stores a global log for the simulation
 	_log: null,
 	log: computed('_log.[]', {
 		get() {
@@ -18,6 +19,7 @@ export default EmberObject.extend({
 			return this.get('_log');
 		}
 	}),
+	// a reversed log so newest entrys are at the top.
 	logView: computed('log.[]', function() {
 		return this.get('_log').slice().reverseObjects();
 	}),

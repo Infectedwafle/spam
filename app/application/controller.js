@@ -9,10 +9,12 @@ import MemoryFrame from 'spam/models/memory-frame/object';
 import Process from 'spam/models/process/object';
 
 export default Controller.extend({
+	// computed property to access the system model in the component
 	_system: null,
 	system: computed('_system', function() {
 		return this.get('_system');
 	}),
+	// property for storing the page frame size config option
 	_pageFrameSize: 1024,
 	pageFrameSize: computed('_pageFrameSize', 'system.pageFrameSize', {
 		get() {
@@ -23,6 +25,7 @@ export default Controller.extend({
 			return this.get('_pageFrameSize');
 		}
 	}),
+	// property for storing the memory size config option
 	_memorySize: 65536,
 	memorySize: computed('_memorySize', 'system.memorySize', {
 		get() {
@@ -33,6 +36,7 @@ export default Controller.extend({
 			return this.get('_memorySize');
 		}
 	}),
+	// property for storing the number of processes config option
 	_numberOfProcesses: 3,
 	numberOfProcesses: computed('_numberOfProcesses', {
 		get() {
@@ -43,6 +47,7 @@ export default Controller.extend({
 			return this.get('_numberOfProcesses');
 		}
 	}),
+	// property for storing the instructions per process config option
 	_instructionsPerProcess: 5,
 	instructionsPerProcess: computed('_instructionsPerProcess', {
 		get() {
@@ -53,6 +58,7 @@ export default Controller.extend({
 			return this.get('_instructionsPerProcess');
 		}
 	}),
+	// allows setting the memory size in bits (less mental math)
 	memorySizeBits: computed('memorySize', {
 		get() {
 			return Math.log2(this.get('memorySize'));
@@ -62,6 +68,7 @@ export default Controller.extend({
 			return Math.log2(this.get('memorySize'));
 		}
 	}),
+	// allows setting the page frame size in bits (less mental math)
 	pageFrameSizeBits: computed('pageFrameSize', {
 		get() {
 			return Math.log2(this.get('pageFrameSize'));
@@ -71,7 +78,9 @@ export default Controller.extend({
 			return Math.log2(this.get('pageFrameSize'));
 		}
 	}),
+	// holds the value of the instruction counter for the simulator
 	instructionCounter: 0,
+	// holds the instructions text that will be converted into instruction objects by the load config action
 	_instructions: null,
 	instructions: computed('_instructions', {
 		get() {
@@ -83,9 +92,13 @@ export default Controller.extend({
 		}
 	}),
 	actions: {
+		// setup the simulator enviorment with default values for a blank system
 		loadConfig() {
+			// reset instruction counter and show the loaded simulator instructions
 			this.set('instructionCounter', 0);
 			this.set('showInstructions', true);
+
+			// calculate the number of frames in memory
 			let frameCount = Number(this.get('memorySize')) / Number(this.get('pageFrameSize'));
 
 			let system = System.create({
@@ -116,11 +129,13 @@ export default Controller.extend({
 
 			// Init Frames
 			// id is set when loading pages from swap space
+			// this is need to ensure references are not set to each index they all have to be individual objects
 			for(let i = 0; i < memoryUnit.get('frameList').length; i++) {
 				memoryUnit.get('frameList')[i] = MemoryFrame.create({id: null, processId: null});
 			}
 
 			// Init Swap Frames
+			// this is need to ensure references are not set to each index they all have to be individual objects
 			for(let i = 0; i < memoryUnit.get('swapList').length; i++) {
 				memoryUnit.get('swapList')[i] = MemoryFrame.create({id: i, processId: null});
 			}
@@ -128,6 +143,7 @@ export default Controller.extend({
 			system.set('operatingSystem', operatingSystem);
 			system.set('memoryUnit', memoryUnit);
 
+			// if instructions exist then convert the text into command the simualtor can prcess
 			if(this.get('instructions')) {
 				let instructionList = this.get('instructions').split("\n").map((instruction) => {
 					let instructionParts = instruction.split(" ");
@@ -170,13 +186,14 @@ export default Controller.extend({
 							});
 						default:
 							throw "Command not recognized";
-							break;
 					}
 				});
 
+				// load instructions into system
 				system.set('instructions', instructionList);
 			}
 
+			// load system
 			this.set('_system', system);
 		},
 		generateInstructions(pageFrameSize, memorySize, numberOfProcesses, instructionsPerProcess) {
@@ -184,12 +201,13 @@ export default Controller.extend({
 			this.set('showInstructions', false);
 			this.set('instructions', instructions);
 		},
+		// run button
 		loadInstruction(counter) {
 			let system = this.get('system');
 			system.loadInstruction(counter);
-			console.log(counter);
 			this.set('instructionCounter', Number(counter) + 1);
 		},
+		// run all button
 		loadAllInstruction(counter) {
 			let cont = this;
 			let system = this.get('system');
@@ -201,6 +219,7 @@ export default Controller.extend({
 				}, i * 500);
 			}
 		},
+		// back button
 		reverseInstruction(counter) {
 			this.send('loadConfig');
 			let system = this.get('system');

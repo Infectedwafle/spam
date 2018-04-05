@@ -3,6 +3,7 @@ import { computed } from '@ember/object';
 
 export default Component.extend({
 	mmu: null,
+	// computed property to calculate % used memory
 	memoryUsed: computed('mmu.frameList.@each.id', function() {
 		let mmu = this.get('mmu');
 		if(mmu) {
@@ -15,12 +16,12 @@ export default Component.extend({
 				}
 			});
 
-			console.log(count, frameList.length);
 			return (count / frameList.length) * 100;
 		} else {
 			return 0;
 		}
 	}),
+	// computed property to calculate % used swap memory
 	virtualUsed: computed('mmu.swapList.@each.processId', function() {
 		let mmu = this.get('mmu');
 		if(mmu) {
@@ -33,7 +34,6 @@ export default Component.extend({
 				}
 			});
 
-			console.log(count, swapList.length);
 			return (count / swapList.length) * 100;
 		} else {
 			return 0

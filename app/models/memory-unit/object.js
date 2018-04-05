@@ -59,6 +59,8 @@ export default EmberObject.extend({
 				message: `Frame ${id} was found in RAM`,
 				type: 'info'
 			}));
+
+			ramFrame.set('timeStamp', new Date());
 			return ramFrame;
 		} else {
 			system.get('log').pushObject(EmberObject.create({
@@ -85,6 +87,14 @@ export default EmberObject.extend({
 	}
 });
 
+/**
+ * Copies a Swap Frame to a Ram Frame.
+ * First check for empty frame.
+ * if no empty frame then find oldest memory frame
+ * @param  {[type]} frameList [description]
+ * @param  {[type]} frame     [description]
+ * @return {[type]}           [description]
+ */
 const copyFrameToRam = function(frameList, frame) {
 	// check for empty frames in ram
 	for(let i = 0; i < frameList.length; i++) {

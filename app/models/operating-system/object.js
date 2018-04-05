@@ -271,6 +271,7 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		}));
 	}
 
+	// setup code page table
 	let codePageTableFrame = reserveMemory(system, os, pageSize);
 	if(codePageTableFrame) {
 		system.get('log').pushObject(EmberObject.create({
@@ -287,6 +288,7 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		return null;
 	}
 
+	// setup data page table
 	let dataPageTableFrame = reserveMemory(system, os, pageSize);
 	if(dataPageTableFrame) {
 		system.get('log').pushObject(EmberObject.create({
@@ -303,6 +305,7 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		return null;
 	}
 
+	// setup master page table
 	let masterPageTableFrame = reserveMemory(system, os, pageSize);
 	if(masterPageTableFrame) {
 		system.get('log').pushObject(EmberObject.create({
