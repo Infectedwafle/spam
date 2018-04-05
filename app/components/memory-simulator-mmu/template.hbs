@@ -1,10 +1,11 @@
 <div class="container">
 	<div class="row">
 		<div class="col-sm">
-			Memory
+			Memory: {{memoryUsed}}% Used <br>
+			Page Faults: {{mmu.numberOfPageFaults}} 
 		</div>
 		<div class="col-sm">
-			Swap Space
+			Swap Space: {{virtualUsed}}% Used
 		</div>
 	</div>
 	<div class="row">

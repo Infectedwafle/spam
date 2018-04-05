@@ -48,12 +48,28 @@ export default EmberObject.extend({
 				os.set('_secondaryPageTable', null);
 				return system.releaseMemory(instruction.get('processId'));
 			case 2:
+				system.get('log').pushObject(EmberObject.create({
+					message: `OS loads code frames for process ${instruction.get('processId')}`,
+					type: 'info'
+				}));
 				return useCode(os, instruction.get('processId'));
 			case 3:
+				system.get('log').pushObject(EmberObject.create({
+					message: `OS loads data frames for process ${instruction.get('processId')}`,
+					type: 'info'
+				}));
 				return useData(os, instruction.get('processId'));
 			case 4:
+				system.get('log').pushObject(EmberObject.create({
+					message: `OS loads stack frames for process ${instruction.get('processId')}`,
+					type: 'info'
+				}));
 				return useStack(os, instruction.get('processId'), instruction.get('stackSize'));
 			case 5:
+				system.get('log').pushObject(EmberObject.create({
+					message: `OS loads heap frames for process ${instruction.get('processId')}`,
+					type: 'info'
+				}));
 				return useHeap(os, instruction.get('processId'), instruction.get('heapSize'));
 			default:
 				break;
@@ -89,6 +105,11 @@ const createCodePageTable = function(process, system, os, codeSize) {
 	let frames = reserveMemory(system, os, codeSize);
 	let pageSize = os.get('pageSize');
 
+	system.get('log').pushObject(EmberObject.create({
+		message: `OS requested ${frames.length} frames from memory for Process ${process.id} code`,
+		type: 'info'
+	}));
+
 	// if null frames could not be allocated / system out of memory
 	if(frames !== null) {
 		let tempSize = codeSize;
@@ -110,6 +131,11 @@ const createDataPageTable = function(process, system, os, dataSize) {
 	let dataPageTable = createPageTable(os, process.get('id'), 'Data');
 	let frames = reserveMemory(system, os, dataSize);
 	let pageSize = os.get('pageSize');
+
+	system.get('log').pushObject(EmberObject.create({
+		message: `OS requested ${frames.length} frames from memory for Process ${process.id} data`,
+		type: 'info'
+	}));
 
 	// if null frames could not be allocated / system out of memory
 	if(frames !== null) {
@@ -133,6 +159,11 @@ const createStackPageTable = function(process, system, os, stackSize) {
 	let frames = reserveMemory(system, os, stackSize);
 	let pageSize = os.get('pageSize');
 
+	system.get('log').pushObject(EmberObject.create({
+		message: `OS requested ${frames.length} frames from memory for Process ${process.id} stack`,
+		type: 'info'
+	}));
+
 	// if null frames could not be allocated / system out of memory
 	if(frames !== null) {
 		let tempSize = stackSize;
@@ -154,6 +185,11 @@ const createHeapPageTable = function(process, system, os, heapSize) {
 	let heapPageTable = createPageTable(os, process.get('id'), 'Heap');
 	let frames = reserveMemory(system, os, heapSize);
 	let pageSize = os.get('pageSize');
+
+	system.get('log').pushObject(EmberObject.create({
+		message: `OS requested ${frames.length} frames from memory for Process ${process.id} heap`,
+		type: 'info'
+	}));
 
 	// if null frames could not be allocated / system out of memory
 	if(frames !== null) {
@@ -214,6 +250,11 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		if(!codePageTable) {
 			return null;
 		}
+
+		system.get('log').pushObject(EmberObject.create({
+			message: `Process ${id} code page table created`,
+			type: 'info'
+		}));
 	}
 
 	// reserve frames for data section
@@ -223,10 +264,20 @@ const createProcess = function(os, id, codeSize, dataSize) {
 		if(!dataPageTable) {
 			return null;
 		}
+
+		system.get('log').pushObject(EmberObject.create({
+			message: `Process ${id} data page table created`,
+			type: 'info'
+		}));
 	}
 
 	let codePageTableFrame = reserveMemory(system, os, pageSize);
 	if(codePageTableFrame) {
+		system.get('log').pushObject(EmberObject.create({
+			message: `OS requested a frame to store code page table`,
+			type: 'info'
+		}));
+
 		codePageTableFrame[0].set('data', codePageTable);
 		codePageTableFrame[0].set('size', pageSize);
 		codePageTableFrame[0].set('processId', process.get('id'));
@@ -238,6 +289,11 @@ const createProcess = function(os, id, codeSize, dataSize) {
 
 	let dataPageTableFrame = reserveMemory(system, os, pageSize);
 	if(dataPageTableFrame) {
+		system.get('log').pushObject(EmberObject.create({
+			message: `OS requested a frame to store data page table`,
+			type: 'info'
+		}));
+
 		dataPageTableFrame[0].set('data', dataPageTable);
 		dataPageTableFrame[0].set('size', pageSize);
 		dataPageTableFrame[0].set('processId', process.get('id'));
@@ -249,6 +305,11 @@ const createProcess = function(os, id, codeSize, dataSize) {
 
 	let masterPageTableFrame = reserveMemory(system, os, pageSize);
 	if(masterPageTableFrame) {
+		system.get('log').pushObject(EmberObject.create({
+			message: `OS requested a frame to store master page table`,
+			type: 'info'
+		}));
+
 		masterPageTableFrame[0].set('data', pageTable);
 		masterPageTableFrame[0].set('type', 'Master PT');
 		masterPageTableFrame[0].set('processId', process.get('id'));

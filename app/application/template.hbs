@@ -72,12 +72,54 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-3">
+			<div class="row {{if showInstructions 'show-instructions'}}">
+				{{#if showInstructions}}
+					<div class="col-1">
+							
+					</div>
+					<div class="col-2">
+						Type:	
+					</div>
+					<div class="col-3">
+						Process Id:	
+					</div>
+					<div class="col-3">
+						Code Size:	
+					</div>
+					<div class="col-3">
+						Data Size:	
+					</div>
+					{{#each system.instructions as |instruction index|}}
+						<div class="col-1">
+							{{#if (eq instructionCounter index)}}
+								*
+							{{/if}}	
+						</div>
+						<div class="col-2">
+							{{instruction.type}}
+						</div>
+						<div class="col-3">
+							{{instruction.processId}}
+						</div>
+						<div class="col-3">
+							{{or instruction.codeSize instruction.stackSize instruction.heapSize}}
+						</div>
+						<div class="col-3">
+							{{instruction.dataSize}}
+						</div>
+					{{/each}}
+				{{else}}
+					<div class="col-12">
+						{{textarea class='instructions-textarea' value=instructions rows=25}}
+					</div>
+				{{/if}}
+			</div>
 			<div class="row">
-				<div class="col-12">
-					{{textarea class='instructions-textarea' value=instructions rows=25}}
-				</div>
-				<div class="col-12">
+				<div class="col-6">
 					<button class="action-buttons" {{action 'loadConfig'}}>Load Config</button>
+				</div>
+				<div class="col-6">
+					<button class="action-buttons" {{action 'toggleEdit'}}>Toggle Instructions View</button>
 				</div>
 				<div class="col-4">
 					<button class="action-buttons" {{action 'reverseInstruction' instructionCounter}}>Back</button>
@@ -91,7 +133,7 @@
 			</div>
 			<div class="row">
 				{{#each system.logView as |entry|}}
-					<div class="col-12 {{if (eq entry.type 'error') 'log-error'}} {{if (eq entry.type 'info') 'log-info'}}">
+					<div class="col-12 {{if (eq entry.type 'error') 'log-error'}} {{if (eq entry.type 'info') 'log-info'}} {{if (eq entry.type 'warning') 'log-warning'}}">
 						{{entry.message}}
 					</div>
 				{{/each}}

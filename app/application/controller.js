@@ -85,6 +85,7 @@ export default Controller.extend({
 	actions: {
 		loadConfig() {
 			this.set('instructionCounter', 0);
+			this.set('showInstructions', true);
 			let frameCount = Number(this.get('memorySize')) / Number(this.get('pageFrameSize'));
 
 			let system = System.create({
@@ -109,6 +110,7 @@ export default Controller.extend({
 				frameSize: system.get('frameSize'),
 				frameList: new Array(frameCount),
 				swapList: new Array(frameCount * 2),
+				numberOfPageFaults: 0,
 				system: system // reference to ask system to run commands
 			});
 
@@ -179,13 +181,14 @@ export default Controller.extend({
 		},
 		generateInstructions(pageFrameSize, memorySize, numberOfProcesses, instructionsPerProcess) {
 			let instructions = InstructionGenerator.generate(Number(pageFrameSize), Number(memorySize), Number(numberOfProcesses), Number(instructionsPerProcess));
+			this.set('showInstructions', false);
 			this.set('instructions', instructions);
 		},
 		loadInstruction(counter) {
 			let system = this.get('system');
 			system.loadInstruction(counter);
-
-			this.set('instructionCounter', counter + 1);
+			console.log(counter);
+			this.set('instructionCounter', Number(counter) + 1);
 		},
 		loadAllInstruction(counter) {
 			let cont = this;
@@ -201,12 +204,15 @@ export default Controller.extend({
 		reverseInstruction(counter) {
 			this.send('loadConfig');
 			let system = this.get('system');
-			
+
 			for(let i = 0; i < counter - 1; i++) {
 				system.loadInstruction(i);
 			}
 
 			this.set('instructionCounter', counter -1);
+		},
+		toggleEdit() {
+			this.toggleProperty('showInstructions');
 		}
 	}
 });

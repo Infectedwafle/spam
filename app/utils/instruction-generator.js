@@ -33,8 +33,8 @@ const generate = function(pageFrameSize, memorySize, numberOfProcesses = 5, comm
 const generateProcess = function(processId, memorySize, pageFrameSize, numberOfProcesses) {
 	return {
 		id: processId,
-		codeSize: getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1)) * .1) || 1)),
-		dataSize: getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1)) * .1) || 1)),
+		codeSize: getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1))) || 1)),
+		dataSize: getRandomInt(1, pageFrameSize * (Math.floor(((memorySize / pageFrameSize) / (numberOfProcesses + 1))) || 1)),
 	}
 }
 

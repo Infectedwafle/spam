@@ -5,6 +5,7 @@ export default EmberObject.extend({
 	frameSize: null,
 	frameList: null,
 	swapList: null,
+	numberOfPageFaults: null,
 	reserveMemory(amount) {
 		let swapList = this.get('swapList');
 		let neededFrames = Math.ceil(amount / this.get('frameSize'));
@@ -62,8 +63,10 @@ export default EmberObject.extend({
 		} else {
 			system.get('log').pushObject(EmberObject.create({
 				message: `Frame ${id} was not found in RAM throwing page fault`,
-				type: 'info'
+				type: 'warning'
 			}));
+
+			this.set('numberOfPageFaults', this.get('numberOfPageFaults') + 1);
 			return null; // throw page fault
 		}
 	},

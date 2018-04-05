@@ -66,7 +66,20 @@ body {
 }
 
 .log-info {
-	color: lighten(blue, 40%);
+	color: lighten(blue, 35%);
+}
+
+.log-warning {
+	color: lighten(yellow, 25%);
+}
+
+.show-instructions {
+	border: 1px solid darken(white, 15%);
+	margin-left: 0px !important;
+	margin-right: 0px !important;
+	margin-bottom: 5px;
+	max-height: 400px;
+	overflow-y: auto;
 }
 
 @import "ember-cli-bootstrap-4/bootstrap-grid";
